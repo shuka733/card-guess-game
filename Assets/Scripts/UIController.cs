@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,6 +15,10 @@ public class UIController : MonoBehaviour
     [SerializeField] private Text playerCardText;
     [SerializeField] private Text cpuCardText;
 
+    [Header("Card Backgrounds")]
+    [SerializeField] private RectTransform playerCardBg;
+    [SerializeField] private RectTransform cpuCardBg;
+
     [Header("Buttons")]
     [SerializeField] private Button higherButton;
     [SerializeField] private Button lowerButton;
@@ -23,7 +28,11 @@ public class UIController : MonoBehaviour
     [Header("Labels")]
     [SerializeField] private Text resultText;
 
+    [Header("Animation")]
+    [SerializeField] private float flipDuration = 0.4f;
+
     private GameManager.Guess? currentGuess;
+    private bool isAnimating;
 
     private void Start()
     {
@@ -39,10 +48,13 @@ public class UIController : MonoBehaviour
     {
         gameManager.StartNewRound();
         currentGuess = null;
+        isAnimating = false;
 
-        // カードを伏せる
+        // カードを伏せる（スケールもリセット）
         playerCardText.text = "?";
         cpuCardText.text = "?";
+        if (playerCardBg != null) playerCardBg.localScale = Vector3.one;
+        if (cpuCardBg != null) cpuCardBg.localScale = Vector3.one;
         resultText.text = "「高い」か「低い」を選んでください";
 
         // ボタン状態リセット
@@ -71,13 +83,26 @@ public class UIController : MonoBehaviour
 
     private void OnConfirm()
     {
-        if (!currentGuess.HasValue) return;
+        if (!currentGuess.HasValue || isAnimating) return;
 
-        // カードを公開
-        playerCardText.text = gameManager.PlayerCard.ToString();
-        cpuCardText.text = gameManager.CpuCard.ToString();
+        // ボタンを即座に無効化
+        SetGuessButtonsInteractable(false);
+        confirmButton.interactable = false;
 
-        // 判定
+        // カードめくりアニメーション開始
+        StartCoroutine(RevealCardsWithFlip());
+    }
+
+    private IEnumerator RevealCardsWithFlip()
+    {
+        isAnimating = true;
+        resultText.text = "";
+
+        // 両カードを同時にめくる
+        StartCoroutine(FlipCard(playerCardBg, playerCardText, gameManager.PlayerCard.ToString()));
+        yield return StartCoroutine(FlipCard(cpuCardBg, cpuCardText, gameManager.CpuCard.ToString()));
+
+        // アニメーション完了後に判定表示
         var result = gameManager.Judge(currentGuess.Value);
         resultText.text = result switch
         {
@@ -87,10 +112,46 @@ public class UIController : MonoBehaviour
             _ => ""
         };
 
-        // ボタン状態を結果表示用に切り替え
-        SetGuessButtonsInteractable(false);
-        confirmButton.interactable = false;
         retryButton.gameObject.SetActive(true);
+        isAnimating = false;
+    }
+
+    /// <summary>
+    /// カードを裏返すアニメーション。
+    /// スケールXを1→0（裏面が消える）→テキスト変更→0→1（表面が現れる）
+    /// </summary>
+    private IEnumerator FlipCard(RectTransform cardBg, Text cardText, string newValue)
+    {
+        float half = flipDuration / 2f;
+
+        // 前半：カードを閉じる（scaleX: 1 → 0）
+        for (float t = 0; t < half; t += Time.deltaTime)
+        {
+            float progress = t / half;
+            float scaleX = Mathf.Lerp(1f, 0f, progress);
+            if (cardBg != null)
+                cardBg.localScale = new Vector3(scaleX, 1f, 1f);
+            yield return null;
+        }
+
+        // 中間：テキストを差し替え
+        if (cardBg != null)
+            cardBg.localScale = new Vector3(0f, 1f, 1f);
+        cardText.text = newValue;
+
+        // 後半：カードを開く（scaleX: 0 → 1）
+        for (float t = 0; t < half; t += Time.deltaTime)
+        {
+            float progress = t / half;
+            float scaleX = Mathf.Lerp(0f, 1f, progress);
+            if (cardBg != null)
+                cardBg.localScale = new Vector3(scaleX, 1f, 1f);
+            yield return null;
+        }
+
+        // 最終値を確定
+        if (cardBg != null)
+            cardBg.localScale = Vector3.one;
     }
 
     private void OnRetry()

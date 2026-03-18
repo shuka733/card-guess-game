@@ -2146,6 +2146,8 @@ MonoBehaviour:
   gameManager: {fileID: 1534372424}
   playerCardText: {fileID: 472810141}
   cpuCardText: {fileID: 563265293}
+  playerCardBg: {fileID: 250065269}
+  cpuCardBg: {fileID: 151218945}
   higherButton: {fileID: 770326289}
   lowerButton: {fileID: 322396629}
   confirmButton: {fileID: 28653968}

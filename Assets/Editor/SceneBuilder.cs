@@ -101,6 +101,8 @@ public class SceneBuilder
         so.FindProperty("gameManager").objectReferenceValue = gm;
         so.FindProperty("playerCardText").objectReferenceValue = playerCardText.GetComponent<Text>();
         so.FindProperty("cpuCardText").objectReferenceValue = cpuCardText.GetComponent<Text>();
+        so.FindProperty("playerCardBg").objectReferenceValue = playerCardBg.GetComponent<RectTransform>();
+        so.FindProperty("cpuCardBg").objectReferenceValue = cpuCardBg.GetComponent<RectTransform>();
         so.FindProperty("higherButton").objectReferenceValue = higherBtn.GetComponent<Button>();
         so.FindProperty("lowerButton").objectReferenceValue = lowerBtn.GetComponent<Button>();
         so.FindProperty("confirmButton").objectReferenceValue = confirmBtn.GetComponent<Button>();

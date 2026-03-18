@@ -12,8 +12,8 @@ public class AndroidBuildConfigurator
         PlayerSettings.companyName = "CardGuessGame";
         PlayerSettings.productName = "Card Guess Game";
         PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, "com.cardguessgame.app");
-        PlayerSettings.bundleVersion = "0.1.0";
-        PlayerSettings.Android.bundleVersionCode = 1;
+        PlayerSettings.bundleVersion = "0.2.0";
+        PlayerSettings.Android.bundleVersionCode = 2;
 
         // Minimum API level
         PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel22;
