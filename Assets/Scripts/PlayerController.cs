@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!GameManager.Instance.IsPlaying()) { rb.linearVelocity = Vector2.zero; return; }
+        if (!GameManager.Instance.IsPlaying()) { rb.velocity = Vector2.zero; return; }
 
         Vector2 input = Vector2.zero;
         if (joystick != null)
@@ -53,7 +53,7 @@ public class PlayerController : MonoBehaviour
             input.y = Input.GetAxisRaw("Vertical");
         }
 
-        rb.linearVelocity = input.normalized * MoveSpeed;
+        rb.velocity = input.normalized * MoveSpeed;
     }
 
     void TryInteract()

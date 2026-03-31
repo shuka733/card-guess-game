@@ -34,7 +34,7 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
-        if (!GameManager.Instance.IsPlaying()) { rb.linearVelocity = Vector2.zero; return; }
+        if (!GameManager.Instance.IsPlaying()) { rb.velocity = Vector2.zero; return; }
         if (player == null) return;
 
         float dist = Vector2.Distance(transform.position, player.position);
@@ -96,7 +96,7 @@ public class EnemyAI : MonoBehaviour
 
     void DoPatrol()
     {
-        if (PatrolPoints.Count == 0) { rb.linearVelocity = Vector2.zero; return; }
+        if (PatrolPoints.Count == 0) { rb.velocity = Vector2.zero; return; }
 
         Vector2 target = PatrolPoints[patrolIndex].position;
         if (Vector2.Distance(transform.position, target) < 0.25f)
@@ -108,7 +108,7 @@ public class EnemyAI : MonoBehaviour
     void MoveTo(Vector2 target, float speed)
     {
         Vector2 dir = (target - (Vector2)transform.position).normalized;
-        rb.linearVelocity = dir * speed;
+        rb.velocity = dir * speed;
     }
 
     public State CurrentState => currentState;
