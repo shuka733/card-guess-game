@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEditor.Events;
 using System.Collections.Generic;
 
 /// <summary>
@@ -259,7 +260,7 @@ public class HorrorSceneBuilder
             SetAnchoredPos(sub, new Vector2(0, 150));
 
             var startBtn = MakeButton("StartButton", mainMenu.transform, "START", new Vector2(0, -100));
-            startBtn.GetComponent<Button>().onClick.AddListener(() => uiMgr.OnStartButton());
+            UnityEventTools.AddPersistentListener(startBtn.GetComponent<Button>().onClick, uiMgr.OnStartButton);
         }
 
         // ── HUD ──
@@ -348,7 +349,7 @@ public class HorrorSceneBuilder
             SetAnchoredPos(t2, new Vector2(0, 100));
 
             var btn = MakeButton("RestartBtn", gameOver.transform, "もう一度", new Vector2(0, -120));
-            btn.GetComponent<Button>().onClick.AddListener(() => uiMgr.OnRestartButton());
+            UnityEventTools.AddPersistentListener(btn.GetComponent<Button>().onClick, uiMgr.OnRestartButton);
         }
 
         // ── Win ──
@@ -363,7 +364,7 @@ public class HorrorSceneBuilder
             SetAnchoredPos(t2, new Vector2(0, 100));
 
             var btn = MakeButton("WinRestartBtn", win.transform, "もう一度", new Vector2(0, -120));
-            btn.GetComponent<Button>().onClick.AddListener(() => uiMgr.OnRestartButton());
+            UnityEventTools.AddPersistentListener(btn.GetComponent<Button>().onClick, uiMgr.OnRestartButton);
         }
 
         // 暗闇レイヤーを最前面へ（UI の上から暗くする）
