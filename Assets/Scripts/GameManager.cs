@@ -1,43 +1,56 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-/// <summary>
-/// カード予想ゲームのコアロジックを管理する。
-/// UIには依存せず、結果の判定のみを行う。
-/// </summary>
+public enum GameState { MainMenu, Playing, GameOver, Win }
+
 public class GameManager : MonoBehaviour
 {
-    public const int CardMin = 1;
-    public const int CardMax = 13;
+    public static GameManager Instance { get; private set; }
 
-    public int PlayerCard { get; private set; }
-    public int CpuCard { get; private set; }
+    public GameState CurrentState { get; private set; } = GameState.MainMenu;
+    public int KeyCardsCollected { get; private set; }
+    public const int TotalKeyCards = 3;
 
-    public enum Guess { Higher, Lower }
-    public enum Result { Win, Lose, Draw }
-
-    /// <summary>
-    /// 新しいラウンドを開始し、両者にランダムなカードを配る。
-    /// </summary>
-    public void StartNewRound()
+    void Awake()
     {
-        PlayerCard = Random.Range(CardMin, CardMax + 1);
-        CpuCard = Random.Range(CardMin, CardMax + 1);
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
     }
 
-    /// <summary>
-    /// プレイヤーの予想に基づいて勝敗を判定する。
-    /// </summary>
-    public Result Judge(Guess guess)
+    public void StartGame()
     {
-        if (PlayerCard == CpuCard)
-            return Result.Draw;
+        KeyCardsCollected = 0;
+        CurrentState = GameState.Playing;
+        UIManager.Instance.OnGameStart();
+    }
 
-        bool playerIsHigher = PlayerCard > CpuCard;
+    public void CollectKeyCard()
+    {
+        if (CurrentState != GameState.Playing) return;
+        KeyCardsCollected++;
+        UIManager.Instance.OnKeyCardCollected(KeyCardsCollected, TotalKeyCards);
+    }
 
-        if ((guess == Guess.Higher && playerIsHigher) ||
-            (guess == Guess.Lower && !playerIsHigher))
-            return Result.Win;
+    public bool HasAllKeyCards() => KeyCardsCollected >= TotalKeyCards;
 
-        return Result.Lose;
+    public void GameOver()
+    {
+        if (CurrentState != GameState.Playing) return;
+        CurrentState = GameState.GameOver;
+        UIManager.Instance.OnGameOver();
+    }
+
+    public void Win()
+    {
+        if (CurrentState != GameState.Playing) return;
+        CurrentState = GameState.Win;
+        UIManager.Instance.OnWin();
+    }
+
+    public bool IsPlaying() => CurrentState == GameState.Playing;
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

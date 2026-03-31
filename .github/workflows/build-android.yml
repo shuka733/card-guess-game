@@ -31,20 +31,21 @@ jobs:
       - name: Build Android APK
         uses: game-ci/unity-builder@v4
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_LICENSE:  ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL:    ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: Android
           unityVersion: 2022.3.8f1
+          buildMethod: BuildScript.BuildAndroid
           androidExportType: androidPackage
-          buildName: CardGuessGame
+          buildName: SilentWard
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CardGuessGame-APK
-          path: build/Android/*.apk
+          name: SilentWard-APK
+          path: Build/SilentWard.apk
           retention-days: 30
 
       - name: Create Release
@@ -52,13 +53,24 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
-          name: "Build #${{ github.run_number }}"
+          name: "Build #${{ github.run_number }} - Silent Ward"
           body: |
-            Automated Android build from commit ${{ github.sha }}
+            ## Silent Ward - ホラーゲーム Android ビルド
 
-            Download the APK and install on your Android device.
-            You may need to enable "Install from unknown sources" in your device settings.
-          files: build/Android/*.apk
+            廃病棟を舞台にしたホラー脱出ゲームです。
+
+            ### インストール方法
+            1. APKファイルをダウンロード
+            2. Android端末の「設定 > セキュリティ > 提供元不明のアプリ」を有効にする
+            3. ダウンロードしたAPKをタップしてインストール
+
+            ### 遊び方
+            - 左側バーチャルジョイスティックで移動
+            - 右側タップで近くのアイテムを調べる
+            - 鍵カード3枚を集めて出口から脱出せよ！
+
+            Automated build from commit ${{ github.sha }}
+          files: Build/SilentWard.apk
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
