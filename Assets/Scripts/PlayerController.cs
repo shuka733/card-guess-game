@@ -16,7 +16,8 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        joystick = FindObjectOfType<VirtualJoystick>();
+        // includeInactive:true で HUDPanel 非アクティブ時でも取得できる
+        joystick = FindObjectOfType<VirtualJoystick>(true);
     }
 
     void Update()
